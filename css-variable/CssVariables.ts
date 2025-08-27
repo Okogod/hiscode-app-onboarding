@@ -2,6 +2,7 @@
 // Colors
 export enum ColorsVariables {
     GreenColor = "#006B3F",
+    DarkBlackColor ="#001E28",
     BlackColor = "#000B0F",
     GreyColor = "#545454",
     AshColor = "#F5F5F7",

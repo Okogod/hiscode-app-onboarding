@@ -2,6 +2,13 @@
 
 export const Logo = require('../assets/images/logo.png');
 
+export const NigerianFlagImage = require('../assets/images/country-flags/nigeria-flag.webp');
+export const GhanaFlagImage = require('../assets/images/country-flags/ghana-flag.webp');
+export const CameroonFlagImage = require('../assets/images/country-flags/cameroon-flag.gif');
+export const ChadFlagImage = require('../assets/images/country-flags/chad-flag.webp');
+export const CongoFlagImage = require('../assets/images/country-flags/congo-flag.jpg');
+export const EquitorialGuineaFlag = require('../assets/images/country-flags/equitorial-guinea-flag.gif');
+
 export const JoinImage = require('../assets/images/join-images/join-image.png');
 
 
