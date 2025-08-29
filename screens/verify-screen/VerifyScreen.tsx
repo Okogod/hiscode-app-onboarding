@@ -95,7 +95,7 @@ const VerifyScreen = ({ navigation }: VerifyScreenProps) => {
                         </View>
                     </View>
                     <View style={{width: 300}}>
-                        <ProceddButton proceed={() => {navigation.navigate("Final-Screen"), setShowModal(false)}} status={true} />
+                        <ProceddButton proceed={() => {navigation.navigate("Final"), setShowModal(false)}} status={true} />
                     </View>
                 </View>
 
