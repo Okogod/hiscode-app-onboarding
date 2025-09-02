@@ -17,7 +17,7 @@ type SplashScreenProps = {
 const SplashScreen = ({ navigation }: SplashScreenProps) => {
 
     const proceed = () => {
-        navigation.navigate("Welcome");
+        navigation.replace("Welcome");
     }
 
     return(

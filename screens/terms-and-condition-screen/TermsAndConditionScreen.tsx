@@ -26,7 +26,7 @@ const TermsAndConditionScreen = ({navigation}: TermsAndConditionScreenProps) => 
 
     const proceed = () => {
         if(isChecked){
-            navigation.navigate("Verify");
+            navigation.replace("Verify");
         }
     }
 

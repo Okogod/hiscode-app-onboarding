@@ -5,7 +5,7 @@ import { type NativeStackNavigationProp } from '@react-navigation/native-stack';
 
 
 // Recat Hooks
-import { useState } from "react";
+import { useState, useEffect, useContext } from "react";
 
 // Componenets
 import ProceddButton from "../../utils/util-componenet/ProceddButton";
@@ -16,31 +16,183 @@ import { ColorsVariables, FontFamily } from "../../css-variable/CssVariables";
 // Utils - Global Styling
 import GlobalStyle from "../../utils/util-styling/GlobalStyling";
 
+// Context
+import { UserContextData } from "../../contexts/UserContext";
+import { CountryContext } from "../../contexts/CountryContext";
+
 
 const Account_Types = ["PERSONAL ACCOUNT", "SAVINGS ACCOUNT", "CURRENT ACCOUNT"];
 
+// Type
 type WelcomeScreenProp = {
     navigation: NativeStackNavigationProp<any>;
 }
 
 
-const WelcomeScreen = ( {navigation}: WelcomeScreenProp) => {
+const WelcomeScreen = ({ navigation }: WelcomeScreenProp) => {
 
+    const User = useContext(UserContextData);
+    const Country = useContext(CountryContext);
+
+    // Account type state.
     const [currentAccountTypes, setCurrentAccountType] = useState(Account_Types[0]);
 
-    const [disabled, setDisabled] = useState(true);
+    // Button disabled state
+    const [disabled, setDisabled] = useState(false);
 
-    const procedd = () => {
-        if(disabled){
-            navigation.navigate("Terms-and-Conditions")
+
+    // Bvn value state.
+    const [bvnValue, setBvnValue] = useState("");
+
+    // Bvn error state.
+    const [bvnError, setBvnError] = useState("");
+
+
+    // Full name value.
+    const [fullName, setFullName] = useState("");
+
+    // Full name error.
+    const [fullNameError, setFullNameError] = useState("");
+
+
+    // Email value.
+    const [emailValue, setEmailValue] = useState("");
+
+    // Email error.
+    const [emailError, setEmailError] = useState("");
+
+    // Number value.
+    const [numberValue, setNumberValue] = useState("");
+
+    // Number error.
+    const [numberError, setNumberError] = useState("");
+
+
+
+
+    // Function to handle bvn input on change.
+    const Bvn_Change = (text: string) => {
+        if (text != "") {
+            setBvnValue(text);
+        } else {
+            setBvnValue(bvnValue);
+        }
+    }
+
+    // Function to handle bvn input on blur.
+    const Bvn_Blur = () => {
+        if (bvnValue.length < 11) {
+            setBvnError("Bvn value must be up to 11 digits");
+            setBvnValue("");
+        } else {
+            setBvnError("");
+            setBvnValue(bvnValue);
+        }
+    }
+
+
+
+
+
+    // Function to handle full name input on change.
+    const FullName_Change = (text: string) => {
+        if (text != "") {
+            setFullName(text.trim());
+        }
+    }
+
+    // Function to handle full name input on blur.
+    const FullName_Blur = () => {
+        if (fullName) {
+            if (/^[A-Z][a-z]+ [A-Z][a-z]+$/.test(fullName)) {
+                setFullName(fullName);
+                setFullNameError("");
+            } else {
+                setFullName("");
+                setFullNameError("Name input can only take letters and spaces");
+            }
+        } else {
+            setFullNameError("Name field was empty");
+        }
+    }
+
+
+
+
+
+    // Function to handle email input on change. 
+    const Email_Change = (text: string) => {
+        if (text != "") {
+            setEmailValue(text.trim());
+        }
+    }
+
+    // Function to handle email input on blur.
+    const Email_Blur = () => {
+        if (emailValue) {
+            if (/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(emailValue)) {
+                setEmailValue(emailValue);
+                setEmailError("");
+            } else {
+                setEmailValue("");
+                setEmailError("Invalid email pattern");
+            }
+        } else {
+            setEmailError("Email field was empty");
+        }
+    }
+
+
+
+
+    // Function to handle number input on change.
+    const Number_Change = (text: string) => {
+        if (text != "") {
+            setNumberValue(text);
+        } else {
+            setNumberValue(numberValue);
+        }
+    }
+
+    // function to handle number input on blur.
+    const Number_Blur = () => {
+        if (numberValue.length < 10) {
+            setNumberError("Number value must be up to 10 digits");
+            setNumberValue("");
+        } else {
+            setNumberError("");
+            setNumberValue(numberValue);
+        }
+    }
+
+
+
+
+    // To check if all fields are filled
+    useEffect(() => {
+        if(numberValue && fullName && emailValue && bvnValue ){
+            setDisabled(true);
         }else{
+            setDisabled(false);
+        }
+    }, [numberValue, fullName, emailValue, bvnValue])
+
+
+
+    // Function to handle input validation and proceed to next screen.
+    const procedd = () => {
+        if (disabled) {
+            User?.setUser({fullName: fullName, email: emailValue, bvn:bvnValue, number: numberValue, accountType: currentAccountTypes, country: (Country?.country.name as string)})
+            navigation.replace("Terms-and-Conditions")
+        } else {
             return false;
         }
     }
 
     return (
         <KeyboardAvoidingView behavior="padding" style={{ flex: 1, backgroundColor: ColorsVariables.AshColor }}>
-            <ScrollView style={GlobalStyle.conatiner}>
+            <ScrollView style={GlobalStyle.conatiner} bounces={false}>
+
 
                 <View style={{ marginBottom: 30 }}>
                     <Text style={{ color: ColorsVariables.BlackColor, fontSize: 32, fontFamily: FontFamily.AvenirMedium, fontWeight: 500 }}>
@@ -51,6 +203,7 @@ const WelcomeScreen = ( {navigation}: WelcomeScreenProp) => {
                     </Text>
                 </View>
 
+
                 <View style={{ marginBottom: 30 }}>
 
                     <View style={{ marginBottom: 20 }}>
@@ -58,7 +211,8 @@ const WelcomeScreen = ( {navigation}: WelcomeScreenProp) => {
                             <Text style={{ padding: 0, margin: 0, color: ColorsVariables.BlackColor, fontWeight: 400, fontFamily: FontFamily.AvenirRoman }}>
                                 Enter your BVN
                             </Text>
-                            <TextInput maxLength={11} keyboardType="numeric" style={{ borderBottomWidth: 1, borderColor: '#D8D8D8', marginBottom: 5, color: ColorsVariables.DarkBlackColor }} />
+                            <TextInput onChangeText={(text => Bvn_Change(text))} onBlur={Bvn_Blur} onFocus={() => setBvnError("")} maxLength={11} keyboardType="number-pad" style={{ borderBottomWidth: 1, borderColor: '#D8D8D8', marginBottom: 5, color: ColorsVariables.DarkBlackColor }} />
+                            {bvnError && <Text style={{ color: ColorsVariables.RedColor, marginBottom: 5, fontFamily: FontFamily.AvenirRoman }}>{bvnError}</Text>}
                         </View>
                         <Text style={{ fontWeight: 400, color: ColorsVariables.GreyColor, fontFamily: FontFamily.AvenirRoman, fontSize: 13.5 }}>
                             Dial *565*0# on your registered number to get your BVN
@@ -69,21 +223,24 @@ const WelcomeScreen = ( {navigation}: WelcomeScreenProp) => {
                         <Text style={{ padding: 0, margin: 0, color: ColorsVariables.BlackColor, fontWeight: 400, fontFamily: FontFamily.AvenirRoman }}>
                             Your full name
                         </Text>
-                        <TextInput  style={{ borderBottomWidth: 1, borderColor: '#D8D8D8', marginBottom: 5, color: ColorsVariables.DarkBlackColor }} />
+                        <TextInput autoCapitalize="words" autoCorrect={false} onChangeText={(text) => FullName_Change(text)} onBlur={FullName_Blur} onFocus={() => setFullNameError("")} style={{ borderBottomWidth: 1, borderColor: '#D8D8D8', marginBottom: 5, color: ColorsVariables.DarkBlackColor }} />
+                        {fullNameError && <Text style={{ color: ColorsVariables.RedColor, marginBottom: 5, fontFamily: FontFamily.AvenirRoman }}>{fullNameError}</Text>}
                     </View>
 
                     <View style={{ marginBottom: 20 }}>
                         <Text style={{ padding: 0, margin: 0, color: ColorsVariables.BlackColor, fontWeight: 400, fontFamily: FontFamily.AvenirRoman }}>
                             Enter your email address
                         </Text>
-                        <TextInput keyboardType="email-address" style={{ borderBottomWidth: 1, borderColor: '#D8D8D8', marginBottom: 5, color: ColorsVariables.DarkBlackColor }} />
+                        <TextInput autoCorrect={false} autoCapitalize="none" onChangeText={(text) => Email_Change(text)} onBlur={Email_Blur} onFocus={() => setEmailError("")} keyboardType="email-address" style={{ borderBottomWidth: 1, borderColor: '#D8D8D8', marginBottom: 5, color: ColorsVariables.DarkBlackColor }} />
+                        {emailError && <Text style={{ color: ColorsVariables.RedColor, marginBottom: 5, fontFamily: FontFamily.AvenirRoman }}>{emailError}</Text>}
                     </View>
 
                     <View style={{ marginBottom: 30 }}>
                         <Text style={{ padding: 0, margin: 0, color: ColorsVariables.BlackColor, fontWeight: 400, fontFamily: FontFamily.AvenirRoman }}>
                             Your mobile number
                         </Text>
-                        <TextInput maxLength={10} keyboardType="numeric" style={{ borderBottomWidth: 1, borderColor: '#D8D8D8', marginBottom: 5, color: ColorsVariables.DarkBlackColor }} />
+                        <TextInput onChangeText={(text) => Number_Change(text)} onBlur={Number_Blur} onFocus={() => setNumberError("")} maxLength={10} keyboardType="number-pad" style={{ borderBottomWidth: 1, borderColor: '#D8D8D8', marginBottom: 5, color: ColorsVariables.DarkBlackColor }} />
+                        {numberError && <Text style={{ color: ColorsVariables.RedColor, marginBottom: 5, fontFamily: FontFamily.AvenirRoman }}>{numberError}</Text>}
                     </View>
                 </View>
 
@@ -103,7 +260,7 @@ const WelcomeScreen = ( {navigation}: WelcomeScreenProp) => {
                     </View>
                 </View>
 
-                <ProceddButton proceed={procedd} status={disabled}/>
+                <ProceddButton proceed={procedd} status={disabled} />
 
             </ScrollView>
         </KeyboardAvoidingView>
